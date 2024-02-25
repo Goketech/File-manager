@@ -50,6 +50,42 @@ const getById = async (req, res) => {
       res.status(500).json({ message: error.message })
     }
   }
+
+// change user profile (userName, email)
+const updateMe = async (req, res, next) => {
+    try {
+      const { id } = req.params
+      const { userName, email } = req.body
+      const newUser = { userName, email }
+      const updatedUser = await User.findByIdAndUpdate(id, newUser, {
+        new: true,
+        runValidators: true
+      })
+      res.status(200).json({ status: 'success', results: { updatedUser } })
+    } catch (error) {
+      res.status(500).json({ message: error.message })
+    }
+  }
+  
+  const changePassword = async (req, res) => {
+    try {
+      const { id } = req.params
+      const user = await User.findById(id)
+      if (!user) {
+        res.status(404).json({ message: `user ID ${id} does not exist` })
+      } else {
+        user.changePassword(req.body.oldpassword, req.body.newpassword, function (err) {
+          if (err) {
+            res.send(err)
+          } else {
+            res.status(200).json({ message: 'password successfully changed' })
+          }
+        })
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message })
+    }
+  }
   
 
 module.exports = {
@@ -57,4 +93,6 @@ module.exports = {
   getById,
   editUser,
   deleteUser,
+  updateMe,
+  changePassword,
   }
