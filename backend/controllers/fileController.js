@@ -1,4 +1,5 @@
 const File = require('../models/fileModel')
+const fileparser = require('../utils/fileparser')
 
 // Function for getting all files
 const getAllFiles = async (req, res) => {
@@ -21,7 +22,25 @@ const getById = async (req, res) => {
     }
 }
 
+// Function for uploading file
+const uploadFile = async (req, res) => {
+  await fileparser(req)
+  .then(data => {
+    res.status(200).json({
+      message: "Success",
+      data
+    })
+  })
+  .catch(error => {
+    res.status(400).json({
+      message: "An error occurred.",
+      error
+    })
+  })
+}
+
 module.exports = {
     getAllFiles,
-    getById
+    getById,
+    uploadFile
 }
